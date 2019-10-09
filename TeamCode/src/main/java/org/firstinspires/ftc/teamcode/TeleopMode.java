@@ -3,10 +3,8 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gyroscope;
-import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp
 
@@ -17,9 +15,7 @@ public class TeleopMode extends LinearOpMode {
     private DcMotor frontLeft;
     private DcMotor rearRight;
     private DcMotor rearLeft;
-    private DigitalChannel digitalTouch;
-    private DistanceSensor sensorColorRange;
-    private Servo servoTest;
+
 
     public void driveTank(double left, double right){
         frontRight.setPower(right);
@@ -38,15 +34,20 @@ public class TeleopMode extends LinearOpMode {
         rearRight = hardwareMap.get(DcMotor.class, "rearRight");
         rearRight = hardwareMap.get(DcMotor.class, "rearLeft");
 
+        frontRight.setDirection(DcMotor.Direction.FORWARD);
+        frontLeft.setDirection(DcMotor.Direction.FORWARD);
+        rearRight.setDirection(DcMotor.Direction.FORWARD);
+        rearLeft.setDirection(DcMotor.Direction.FORWARD);
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
         waitForStart();
+
         telemetry.addData("Status", "Running");
         telemetry.update();
-        while (opModeIsActive()) {
 
+        while (opModeIsActive()) {
 
             double left_axisY = -this.gamepad1.left_stick_y;
             double right_axisY = -this.gamepad1.right_stick_y;
@@ -56,7 +57,6 @@ public class TeleopMode extends LinearOpMode {
             telemetry.addData("Left", left_axisY);
             telemetry.addData("Right", right_axisY);
             telemetry.update();
-
         }
     }
 }
