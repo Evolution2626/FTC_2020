@@ -55,6 +55,7 @@ public class TeleopMode extends LinearOpMode {
 
             telemetry.addData("Left", left_axisY);
             telemetry.addData("Right", right_axisY);
+            telemetry.addData("Gyro", imu);
             telemetry.update();
         }
     }
