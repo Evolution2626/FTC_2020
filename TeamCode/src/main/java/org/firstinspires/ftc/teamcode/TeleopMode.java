@@ -1,19 +1,21 @@
 package org.firstinspires.ftc.teamcode;  //Folder
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode; // FTC library
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Gyroscope;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp(name = "Teleop_Test")   //Mode
 
 public class TeleopMode extends LinearOpMode {  // Basic code here
 
-    private Gyroscope imu;
+   // private Gyroscope imu;
     private DcMotor frontRight;     // Creating all object
     private DcMotor frontLeft;
     private DcMotor rearRight;
     private DcMotor rearLeft;
+    private Servo pince;
 
 
     public void driveTank(double left, double right){    //Fonction for an easy tank drive(taken from FRC )
@@ -23,20 +25,25 @@ public class TeleopMode extends LinearOpMode {  // Basic code here
         rearLeft.setPower(left);
     }
 
+    public static double map(double x, double in_min, double in_max, double out_min, double out_max){
+        return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+    }
 
     @Override
     public void runOpMode() {   //run while init
 
-        imu = hardwareMap.get(Gyroscope.class, "imu");       // Defining which object is what on the robot
-        frontRight = hardwareMap.get(DcMotor.class, "frontRight");
-        frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
-        rearRight = hardwareMap.get(DcMotor.class, "rearRight");
-        rearRight = hardwareMap.get(DcMotor.class, "rearLeft");
+       // imu = hardwareMap.get(Gyroscope.class, "imu");       // Defining which object is what on the robot
+        frontRight = hardwareMap.dcMotor.get("frontRight");
+        frontLeft = hardwareMap.dcMotor.get("frontLeft");
+        rearRight = hardwareMap.dcMotor.get("rearRight");
+        rearLeft = hardwareMap.dcMotor.get("rearLeft");
+        pince = hardwareMap.get(Servo.class, "servo");
 
-        frontRight.setDirection(DcMotor.Direction.FORWARD);   // setting the motor direction
-        frontLeft.setDirection(DcMotor.Direction.FORWARD);
-        rearRight.setDirection(DcMotor.Direction.FORWARD);
-        rearLeft.setDirection(DcMotor.Direction.FORWARD);
+
+        frontRight.setDirection(DcMotorSimple.Direction.REVERSE);   // setting the motor direction
+        frontLeft.setDirection(DcMotorSimple.Direction.FORWARD);
+        rearRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        rearLeft.setDirection(DcMotorSimple.Direction.FORWARD);
 
         telemetry.addData("Status", "Initialized");  // print in console
         telemetry.update();
@@ -46,17 +53,28 @@ public class TeleopMode extends LinearOpMode {  // Basic code here
         telemetry.addData("Status", "Running");   // print in console
         telemetry.update();
 
-        while (opModeIsActive()) {
+        if(opModeIsActive()) {
 
-            double left_axisY = -this.gamepad1.left_stick_y;     //define the joystick variable
-            double right_axisY = -this.gamepad1.right_stick_y;
+            while (opModeIsActive()) {
 
-            driveTank(left_axisY, right_axisY);    //make the motor move
+                double left_axisY = -this.gamepad1.left_stick_y;     //define the joystick variable
+                double right_axisY = -this.gamepad1.right_stick_y;
+                double right_trigger = this.gamepad1.right_trigger;
+                double left_trigger = this.gamepad1.left_trigger;
 
-            telemetry.addData("Left", left_axisY);
-            telemetry.addData("Right", right_axisY);    // print in the console
-            telemetry.addData("Gyro", imu);
-            telemetry.update();
+                double servoPosition = map(right_trigger - left_trigger, -1, 1, 500, 2500) ;
+
+                driveTank(left_axisY, right_axisY);    //make the motor move
+
+
+                pince.setPosition(servoPosition);
+
+
+                telemetry.addData("Left", left_axisY);
+                telemetry.addData("Right", right_axisY);    // print in the console
+                //   telemetry.addData("Gyro", imu);
+                telemetry.update();
+            }
         }
     }
 }
